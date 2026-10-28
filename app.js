@@ -284,3 +284,4 @@ $('#fichier').onchange = async (ev) => {
 };
 
 showTab('recolter');
+navigator.serviceWorker?.register('./sw.js');
