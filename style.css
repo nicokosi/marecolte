@@ -141,6 +141,15 @@ label input, label select {
   font-size: 17px; /* < 16px déclenche le zoom automatique de Safari */
 }
 
+/* Safari iOS donne au champ date une largeur intrinsèque qui ignore width: 100% et déborde. */
+label input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+}
+
+label input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+
 .erreur { color: var(--rouge); margin: 0; min-height: 1em; }
 .erreur:empty { display: none; }
 

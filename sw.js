@@ -1,5 +1,5 @@
 // À incrémenter à chaque déploiement, sinon l'iPhone garde l'ancienne version en cache.
-const CACHE = 'marecolte-v1';
+const CACHE = 'marecolte-v2';
 const FICHIERS = [
   './', './index.html', './style.css', './app.js', './domain.js',
   './manifest.webmanifest', './icon-180.png', './icon-512.png',

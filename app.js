@@ -158,7 +158,7 @@ function renderHistorique() {
     ...liste.map((a) => el('option', { value: a, textContent: a })));
   choix.value = anneeChoisie;
 
-  const entete = el('tr', {}, ...['Produit', 'Plants', 'Pièces', '/plant', '1ʳᵉ', 'Dern.'].map((t) => el('th', { textContent: t })));
+  const entete = el('tr', {}, ...['Produit', 'Plants', 'Pièces', '/plant', '1re', 'Dern.'].map((t) => el('th', { textContent: t })));
   const lignes = bilan(state, anneeChoisie).map((b) => el('tr', {},
     ...[libelle(b.groupe), b.groupe.nbPlants, b.total, String(b.parPlant).replace('.', ','), jjmm(b.premiere), jjmm(b.derniere)]
       .map((t) => el('td', { textContent: t }))));
