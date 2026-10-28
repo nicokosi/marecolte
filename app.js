@@ -287,5 +287,18 @@ $('#fichier').onchange = async (ev) => {
   }
 };
 
+/** Demande à iOS de ne pas effacer les données quand l'espace manque, et affiche sa réponse. */
+async function protegerStockage() {
+  const etat = $('#stockage');
+  try {
+    if (!navigator.storage?.persist) throw new Error('non disponible');
+    const ok = (await navigator.storage.persisted()) || (await navigator.storage.persist());
+    etat.textContent = `Stockage protégé contre l'effacement automatique : ${ok ? 'oui' : 'non'}`;
+  } catch (e) {
+    etat.textContent = `Stockage protégé contre l'effacement automatique : ${e.message}`;
+  }
+}
+
 showTab('recolter');
 navigator.serviceWorker?.register('./sw.js');
+protegerStockage();
