@@ -4,6 +4,7 @@ import {
   emptyState, addGroupe, updateGroupe, deleteGroupe,
   addRecolte, updateRecolte, deleteRecolte,
   libelle, groupesActifs, annees, bilan, recoltesDe,
+  today, toCsv, toBackup, parseBackup,
 } from '../domain.js';
 
 const tomate = { produit: 'Tomate', nbPlants: 6, datePlantation: '2026-05-12' };
@@ -129,4 +130,59 @@ test('bilan ignore les groupes sans récolte dans l\'année', () => {
 
 test('recoltesDe trie par date décroissante', () => {
   assert.deepEqual(recoltesDe(poireaux().s, 2026).map((r) => r.date), ['2026-11-02', '2026-10-20']);
+});
+
+test('today utilise l\'heure locale', () => {
+  assert.equal(today(new Date(2026, 9, 28, 0, 30)), '2026-10-28');
+  assert.equal(today(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
+});
+
+function uneRecolte(note = '') {
+  const s = emptyState();
+  const g = addGroupe(s, { ...tomate, variete: 'Cœur de bœuf' });
+  addRecolte(s, { groupeId: g.id, date: '2026-07-01', pieces: 12, note });
+  return s;
+}
+
+test('toCsv produit en-tête et lignes', () => {
+  const csv = toCsv(uneRecolte());
+  assert.ok(csv.startsWith('\uFEFFdate;produit;variete;pieces;nb_plants;date_plantation;note\r\n'));
+  assert.ok(csv.includes('2026-07-01;Tomate;Cœur de bœuf;12;6;2026-05-12;\r\n'));
+});
+
+test('toCsv trie par date croissante', () => {
+  const s = uneRecolte();
+  addRecolte(s, { groupeId: s.groupes[0].id, date: '2026-06-15', pieces: 1 });
+  const lignes = toCsv(s).split('\r\n');
+  assert.ok(lignes[1].startsWith('2026-06-15'));
+  assert.ok(lignes[2].startsWith('2026-07-01'));
+});
+
+test('toCsv échappe les champs', () => {
+  const csv = toCsv(uneRecolte('Bol "plein"; serre\nsud'));
+  assert.ok(csv.includes(';"Bol ""plein""; serre\nsud"\r\n'));
+});
+
+test('toBackup puis parseBackup restitue l\'état', () => {
+  const s = uneRecolte('note');
+  updateGroupe(s, s.groupes[0].id, { termine: true });
+  assert.deepEqual(parseBackup(toBackup(s)), s);
+});
+
+test('parseBackup rejette les fichiers invalides', () => {
+  const s = uneRecolte();
+  const g = s.groupes[0];
+  const r = s.recoltes[0];
+  const fichiers = [
+    'pas du json',
+    '{}',
+    'null',
+    '{"version":2,"groupes":[],"recoltes":[]}',
+    JSON.stringify({ version: 1, groupes: [g], recoltes: [{ ...r, pieces: 0 }] }),
+    JSON.stringify({ version: 1, groupes: [g], recoltes: [{ ...r, groupeId: 'inconnu' }] }),
+    JSON.stringify({ version: 1, groupes: [{ ...g, produit: '' }], recoltes: [] }),
+  ];
+  for (const f of fichiers) {
+    assert.throws(() => parseBackup(f), /Fichier de sauvegarde invalide/, f);
+  }
 });

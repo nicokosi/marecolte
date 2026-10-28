@@ -147,3 +147,52 @@ export function bilan(state, annee) {
     .filter(Boolean)
     .sort((a, b) => parLibelle(a.groupe, b.groupe));
 }
+
+/** Date du jour AAAA-MM-JJ en heure locale (toISOString donnerait la date UTC). */
+export function today(now = new Date()) {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${p(now.getMonth() + 1)}-${p(now.getDate())}`;
+}
+
+function champCsv(v) {
+  const s = String(v);
+  return /[;"\r\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+}
+
+/** CSV pour tableur français : BOM, séparateur ";", fins de ligne CRLF, une ligne par récolte. */
+export function toCsv(state) {
+  const groupes = new Map(state.groupes.map((g) => [g.id, g]));
+  const lignes = [...state.recoltes]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((r) => {
+      const g = groupes.get(r.groupeId);
+      return [r.date, g.produit, g.variete, r.pieces, g.nbPlants, g.datePlantation, r.note];
+    });
+  const entete = ['date', 'produit', 'variete', 'pieces', 'nb_plants', 'date_plantation', 'note'];
+  return '﻿' + [entete, ...lignes].map((l) => l.map(champCsv).join(';') + '\r\n').join('');
+}
+
+export function toBackup(state) {
+  return JSON.stringify(state, null, 2);
+}
+
+/** Lit et valide une sauvegarde ; lève une Error sans rien modifier si le fichier est invalide. */
+export function parseBackup(text) {
+  try {
+    const data = JSON.parse(text);
+    if (data?.version !== 1) throw new Error('version non reconnue');
+    if (!Array.isArray(data.groupes) || !Array.isArray(data.recoltes)) throw new Error('structure inattendue');
+    const state = emptyState();
+    for (const g of data.groupes) {
+      if (typeof g?.id !== 'string' || !g.id) throw new Error('identifiant de groupe manquant');
+      state.groupes.push(normaliserGroupe(g));
+    }
+    for (const r of data.recoltes) {
+      if (typeof r?.id !== 'string' || !r.id) throw new Error('identifiant de récolte manquant');
+      state.recoltes.push(normaliserRecolte(state, r));
+    }
+    return state;
+  } catch (e) {
+    throw new Error(`Fichier de sauvegarde invalide : ${e.message}`);
+  }
+}
