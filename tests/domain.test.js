@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   emptyState, addGroupe, updateGroupe, deleteGroupe,
   addRecolte, updateRecolte, deleteRecolte,
+  libelle, groupesActifs, annees, bilan, recoltesDe,
 } from '../domain.js';
 
 const tomate = { produit: 'Tomate', nbPlants: 6, datePlantation: '2026-05-12' };
@@ -84,4 +85,48 @@ test('deleteGroupe refuse si récoltes', () => {
   deleteGroupe(s, g.id);
   assert.equal(s.groupes.length, 0);
   assert.equal(s.recoltes.length, 0);
+});
+
+test('groupesActifs exclut les terminés et trie', () => {
+  const s = emptyState();
+  addGroupe(s, tomate);
+  addGroupe(s, { ...tomate, produit: 'Courgette' });
+  const ail = addGroupe(s, { ...tomate, produit: 'Ail' });
+  updateGroupe(s, ail.id, { termine: true });
+  assert.deepEqual(groupesActifs(s).map(libelle), ['Courgette', 'Tomate']);
+});
+
+test('libelle ajoute la variété si présente', () => {
+  assert.equal(libelle({ produit: 'Tomate', variete: 'Cœur de bœuf' }), 'Tomate – Cœur de bœuf');
+  assert.equal(libelle({ produit: 'Tomate', variete: '' }), 'Tomate');
+});
+
+function poireaux() {
+  const s = emptyState();
+  const g = addGroupe(s, { produit: 'Poireau', nbPlants: 6, datePlantation: '2026-05-10' });
+  addRecolte(s, { groupeId: g.id, date: '2026-11-02', pieces: 8 });
+  addRecolte(s, { groupeId: g.id, date: '2026-10-20', pieces: 12 });
+  addRecolte(s, { groupeId: g.id, date: '2027-01-15', pieces: 5 });
+  return { s, g };
+}
+
+test('annees suit la date de récolte', () => {
+  assert.deepEqual(annees(poireaux().s), [2027, 2026]);
+});
+
+test('bilan compte par année de récolte', () => {
+  const { s, g } = poireaux();
+  assert.deepEqual(bilan(s, 2026), [{ groupe: g, total: 20, parPlant: 3.3, premiere: '2026-10-20', derniere: '2026-11-02' }]);
+  assert.deepEqual(bilan(s, 2027), [{ groupe: g, total: 5, parPlant: 0.8, premiere: '2027-01-15', derniere: '2027-01-15' }]);
+});
+
+test('bilan ignore les groupes sans récolte dans l\'année', () => {
+  const { s } = poireaux();
+  addGroupe(s, tomate);
+  assert.equal(bilan(s, 2026).length, 1);
+  assert.equal(bilan(s, 2025).length, 0);
+});
+
+test('recoltesDe trie par date décroissante', () => {
+  assert.deepEqual(recoltesDe(poireaux().s, 2026).map((r) => r.date), ['2026-11-02', '2026-10-20']);
 });

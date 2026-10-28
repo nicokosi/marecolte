@@ -103,3 +103,47 @@ export function updateRecolte(state, id, champs) {
 export function deleteRecolte(state, id) {
   state.recoltes.splice(trouver(state.recoltes, id), 1);
 }
+
+/** "Tomate – Cœur de bœuf", ou "Tomate" sans variété. */
+export function libelle(groupe) {
+  return groupe.variete ? `${groupe.produit} – ${groupe.variete}` : groupe.produit;
+}
+
+const parLibelle = (a, b) => libelle(a).localeCompare(libelle(b), 'fr');
+
+/** @returns {Groupe[]} */
+export function groupesActifs(state) {
+  return state.groupes.filter((g) => !g.termine).sort(parLibelle);
+}
+
+const anneeDe = (r) => Number(r.date.slice(0, 4));
+
+/** Années de récolte distinctes, de la plus récente à la plus ancienne. */
+export function annees(state) {
+  return [...new Set(state.recoltes.map(anneeDe))].sort((a, b) => b - a);
+}
+
+/** @returns {Recolte[]} récoltes de l'année, de la plus récente à la plus ancienne */
+export function recoltesDe(state, annee) {
+  return state.recoltes.filter((r) => anneeDe(r) === annee).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/** Bilan par groupe des récoltes datées de `annee`. */
+export function bilan(state, annee) {
+  const recoltes = recoltesDe(state, annee);
+  return state.groupes
+    .map((groupe) => {
+      const dates = recoltes.filter((r) => r.groupeId === groupe.id);
+      if (!dates.length) return null;
+      const total = dates.reduce((n, r) => n + r.pieces, 0);
+      return {
+        groupe,
+        total,
+        parPlant: Math.round((total / groupe.nbPlants) * 10) / 10,
+        premiere: dates.at(-1).date,
+        derniere: dates[0].date,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => parLibelle(a.groupe, b.groupe));
+}
