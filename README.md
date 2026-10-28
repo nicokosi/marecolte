@@ -8,9 +8,9 @@ Application : https://nicokosi.github.io/marecolte/
 
 ## Aperçu
 
-| Récolter | Saisie | Historique | Groupes |
-|---|---|---|---|
-| <img src="docs/captures/recolter.png" alt="Onglet Récolter : liste des groupes de plants en cours" width="200"> | <img src="docs/captures/saisie.png" alt="Saisie d'une récolte : nombre de pièces, date et note" width="200"> | <img src="docs/captures/historique.png" alt="Onglet Historique : bilan de l'année et détail des récoltes" width="200"> | <img src="docs/captures/groupes.png" alt="Onglet Groupes : groupes en cours et menu Données" width="200"> |
+| Récolter | Saisie | Historique | Groupes | Données |
+|---|---|---|---|---|
+| <img src="docs/captures/recolter.png" alt="Onglet Récolter : liste des groupes de plants en cours" width="160"> | <img src="docs/captures/saisie.png" alt="Saisie d'une récolte : nombre de pièces, date et note" width="160"> | <img src="docs/captures/historique.png" alt="Onglet Historique : bilan de l'année et détail des récoltes" width="160"> | <img src="docs/captures/groupes.png" alt="Onglet Groupes : groupes de plants en cours avec leurs notes" width="160"> | <img src="docs/captures/donnees.png" alt="Menu Données : sauvegarder, restaurer, exporter en CSV" width="160"> |
 
 ## Documentation
 
