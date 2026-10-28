@@ -5,7 +5,7 @@ des **groupes de plants** déclarés à la plantation, des **récoltes** compté
 et un **bilan par année**. Fonctionne hors ligne ; les données restent sur l'iPhone.
 
 Choix techniques : [ADR 0001](docs/adr/0001-pwa-vanilla-github-pages.md).
-Spécification : [docs/superpowers/specs](docs/superpowers/specs/2026-10-27-marecolte-design.md).
+Spécification : [docs/specs](docs/specs/2026-10-27-marecolte-design.md).
 
 ## Développer
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** HTML/CSS/JS (modules ES) sans dépendance, Node ≥ 20 uniquement pour les tests (`node --test`), GitHub Pages.
 
-**Spec:** `docs/superpowers/specs/2026-10-27-marecolte-design.md`
+**Spec:** `docs/specs/2026-10-27-marecolte-design.md`
 
 ## Global Constraints
 
