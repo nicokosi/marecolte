@@ -4,6 +4,16 @@ Application web installable sur iPhone pour historiser les récoltes du potager 
 des **groupes de plants** déclarés à la plantation, des **récoltes** comptées en pièces,
 et un **bilan par année**. Fonctionne hors ligne ; les données restent sur l'iPhone.
 
+Application : https://nicokosi.github.io/marecolte/
+
+## Aperçu
+
+| Récolter | Saisie | Historique | Groupes |
+|---|---|---|---|
+| <img src="docs/captures/recolter.png" alt="Onglet Récolter : liste des groupes de plants en cours" width="200"> | <img src="docs/captures/saisie.png" alt="Saisie d'une récolte : nombre de pièces, date et note" width="200"> | <img src="docs/captures/historique.png" alt="Onglet Historique : bilan de l'année et détail des récoltes" width="200"> | <img src="docs/captures/groupes.png" alt="Onglet Groupes : groupes en cours et menu Données" width="200"> |
+
+## Documentation
+
 Choix techniques : [ADR 0001](docs/adr/0001-pwa-vanilla-github-pages.md).
 Spécification : [docs/specs](docs/specs/2026-10-27-marecolte-design.md).
 
