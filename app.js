@@ -255,7 +255,9 @@ async function download(nomFichier, contenu, type) {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-$('#sauvegarder').onclick = () => download(`marecolte-${today()}.json`, toBackup(state), 'application/json');
+// Données illisibles : on exporte le texte brut stocké, seule copie récupérable hors de l'app.
+$('#sauvegarder').onclick = () => download(`marecolte-${today()}.json`,
+  saveDisabled ? localStorage.getItem(CLE) : toBackup(state), 'application/json');
 $('#exporter').onclick = () => download(`marecolte-${today()}.csv`, toCsv(state), 'text/csv;charset=utf-8');
 $('#restaurer').onclick = () => $('#fichier').click();
 
@@ -272,14 +274,16 @@ $('#fichier').onchange = async (ev) => {
   }
   const n = (s) => `${s.groupes.length} groupes, ${s.recoltes.length} récoltes`;
   if (!confirm(`Remplacer toutes les données actuelles (${n(state)}) par celles du fichier (${n(nouveau)}) ?`)) return;
-  saveDisabled = false;
   const ancien = state;
+  const verrou = saveDisabled;
   state = nouveau;
+  saveDisabled = false;
   if (save()) {
     render();
     toast('✓ Données restaurées');
   } else {
     state = ancien;
+    saveDisabled = verrou;
   }
 };
 

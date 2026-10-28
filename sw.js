@@ -5,8 +5,9 @@ const FICHIERS = [
   './manifest.webmanifest', './icon-180.png', './icon-512.png',
 ];
 
+// cache: 'reload' contourne le cache HTTP (max-age=600 sur GitHub Pages), sinon v2 pourrait stocker les fichiers de v1.
 self.addEventListener('install', (ev) => {
-  ev.waitUntil(caches.open(CACHE).then((c) => c.addAll(FICHIERS)).then(() => self.skipWaiting()));
+  ev.waitUntil(caches.open(CACHE).then((c) => c.addAll(FICHIERS.map((f) => new Request(f, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (ev) => {
