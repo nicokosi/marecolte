@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ma récolte</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <section data-tab="recolter">
+      <h1>Récolter</h1>
+      <div id="liste-recolter" class="grille"></div>
+    </section>
+
+    <section data-tab="historique" hidden>
+      <h1>Historique</h1>
+      <div id="historique"></div>
+    </section>
+
+    <section data-tab="groupes" hidden>
+      <h1>Groupes de plants</h1>
+      <button type="button" id="nouveau-groupe" class="principal">+ Nouveau groupe</button>
+      <h2>En cours</h2>
+      <ul id="groupes-actifs" class="liste"></ul>
+      <details>
+        <summary>Terminés</summary>
+        <ul id="groupes-termines" class="liste"></ul>
+      </details>
+      <details id="donnees">
+        <summary>Données</summary>
+        <div class="boutons">
+          <button type="button" id="sauvegarder">Sauvegarder</button>
+          <button type="button" id="restaurer">Restaurer…</button>
+          <button type="button" id="exporter">Exporter CSV</button>
+        </div>
+        <input type="file" id="fichier" accept=".json,application/json" hidden>
+        <p class="aide">Supprimer l'app de l'écran d'accueil efface toutes les données. Sauvegardez régulièrement.</p>
+      </details>
+    </section>
+  </main>
+
+  <nav>
+    <button type="button" data-go="recolter">🧺<span>Récolter</span></button>
+    <button type="button" data-go="historique">📅<span>Historique</span></button>
+    <button type="button" data-go="groupes">🌱<span>Groupes</span></button>
+  </nav>
+
+  <dialog id="dlg-recolte">
+    <form>
+      <h2 class="titre"></h2>
+      <label class="si-modif">Groupe <select name="groupeId"></select></label>
+      <label>Nombre de pièces <input name="pieces" type="number" inputmode="numeric" min="1" step="1" required></label>
+      <label>Date <input name="date" type="date" required></label>
+      <label>Note <input name="note" type="text"></label>
+      <p class="erreur" role="alert"></p>
+      <div class="boutons">
+        <button type="submit" class="principal">Enregistrer</button>
+        <button type="button" class="si-modif danger" data-action="supprimer">Supprimer</button>
+        <button type="button" data-action="annuler">Annuler</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-groupe">
+    <form>
+      <h2 class="titre"></h2>
+      <label>Produit <input name="produit" type="text" list="produits" required autocapitalize="sentences"></label>
+      <datalist id="produits"></datalist>
+      <label>Variété <input name="variete" type="text"></label>
+      <label>Nombre de plants <input name="nbPlants" type="number" inputmode="numeric" min="1" step="1" required></label>
+      <label>Date de plantation <input name="datePlantation" type="date" required></label>
+      <label>Note <input name="note" type="text"></label>
+      <p class="erreur" role="alert"></p>
+      <div class="boutons">
+        <button type="submit" class="principal">Enregistrer</button>
+        <button type="button" class="si-modif" data-action="terminer"></button>
+        <button type="button" class="si-modif danger" data-action="supprimer">Supprimer</button>
+        <button type="button" data-action="annuler">Annuler</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" hidden></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
